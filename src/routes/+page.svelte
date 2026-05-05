@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Two from 'two.js';
+	import { Line } from 'two.js/src/shapes/line';
 
 	let canvas: HTMLCanvasElement;
 	let two: Two;
+
 	onMount(() => {
 		two = new Two({
 			fullscreen: true,
@@ -12,18 +14,33 @@
 		});
 	});
 
-	let startX = 0;
-	let startY = 0;
-	function drawVector(startX: number, startY: number, endX: number, endY: number) {
-		two.makeLine(startX, startY, endX, endY);
-	}
+	let currentLine: null | Line = null;
 	function handleMouseDown(ev: MouseEvent) {
-		startX = ev.clientX;
-		startY = ev.clientY;
+		const x = ev.clientX;
+		const y = ev.clientY;
+
+		currentLine = two.makeLine(x, y, x, y);
+		console.log(currentLine);
+		two.update();
+	}
+	function handleMouseMove(ev: MouseEvent) {
+		if (currentLine === null) return;
+
+		currentLine.vertices[1].set(ev.clientX, ev.clientY);
+		two.update();
 	}
 	function handleMouseUp(ev: MouseEvent) {
-		drawVector(startX, startY, ev.clientX, ev.clientY);
+		if (currentLine === null) throw Error("`currentLine` is null");
+
+		currentLine.vertices[1].set(ev.clientX, ev.clientY);
+		two.update();
+		currentLine = null;
 	}
 </script>
 
-<canvas bind:this={canvas} onmousedown={handleMouseDown} onmouseup={handleMouseUp}></canvas>
+<canvas
+	bind:this={canvas}
+	onmousedown={handleMouseDown}
+	onmousemove={handleMouseMove}
+	onmouseup={handleMouseUp}>
+</canvas>
