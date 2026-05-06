@@ -8,23 +8,22 @@
 		vectors = new VectorVisualisationCollection(canvas);
 	});
 
+	let initialX = -1;
+	let initialY = -1;
 	let mouseCurrentlyDown = false;
 	function handleMouseDown(ev: MouseEvent) {
-		const x = ev.clientX;
-		const y = ev.clientY;
+		initialX = ev.clientX;
+		initialY = ev.clientY;
 
-		vectors.addVector({ x, y }, { x, y });
 		mouseCurrentlyDown = true;
 	}
 	function handleMouseMove(ev: MouseEvent) {
 		if (mouseCurrentlyDown !== true) return;
-
-		vectors.changeLatestVectorTerminalPoint({ x: ev.clientX, y: ev.clientY });
 	}
 	function handleMouseUp(ev: MouseEvent) {
 		if (mouseCurrentlyDown !== true) throw Error("`mouseCurrentlyDown` is not true");
 
-		vectors.changeLatestVectorTerminalPoint({ x: ev.clientX, y: ev.clientY });
+		vectors.addVector({ name: "A", x: initialX, y: initialY }, { name: "B", x: ev.clientX, y: ev.clientY }, "a");
 		mouseCurrentlyDown = false;
 	}
 </script>
