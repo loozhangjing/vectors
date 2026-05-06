@@ -1,70 +1,31 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Two from 'two.js';
-	import { Line } from 'two.js/src/shapes/line';
-
-	interface Coordinate {
-		x: number;
-		y: number;
-	}
-
-	class VectorVisualisation {
-		initialPoint = { x: -1, y: -1 };
-		terminalPoint = { x: -1, y: -1 };
-		two: Two;
-		line: Line;
-
-		constructor(initialPoint: Coordinate, terminalPoint: Coordinate, two: Two) {
-			const { x: x1, y: y1 } = initialPoint;
-			const { x: x2, y: y2 } = terminalPoint;
-			this.initialPoint.x = x1;
-			this.initialPoint.y = y1;
-			this.terminalPoint.x = x2;
-			this.terminalPoint.y = y2;
-
-			this.two = two;
-			this.line = this.two.makeLine(x1, y1, x2, y2);
-
-			this.two.update();
-		}
-		changeTerminalPoint(newCoordinates: Coordinate) {
-			const { x, y } = newCoordinates;
-			this.terminalPoint.x = x;
-			this.terminalPoint.y = y;
-			this.line.vertices[1].set(x, y);
-
-			this.two.update();
-		}
-	}
+	import VectorVisualisationCollection from "$lib/VectorVisualisationCollection";
 
 	let canvas: HTMLCanvasElement;
-	let two: Two;
-
+	let vectors: VectorVisualisationCollection;
 	onMount(() => {
-		two = new Two({
-			fullscreen: true,
-			domElement: canvas,
-			autostart: true,
-		});
+		vectors = new VectorVisualisationCollection(canvas);
 	});
 
-	let currentVector: null | VectorVisualisation = null;
+	let mouseCurrentlyDown = false;
 	function handleMouseDown(ev: MouseEvent) {
 		const x = ev.clientX;
 		const y = ev.clientY;
 
-		currentVector = new VectorVisualisation({ x, y }, { x, y }, two);
+		vectors.addVector({ x, y }, { x, y });
+		mouseCurrentlyDown = true;
 	}
 	function handleMouseMove(ev: MouseEvent) {
-		if (currentVector === null) return;
+		if (mouseCurrentlyDown !== true) return;
 
-		currentVector.changeTerminalPoint({ x: ev.clientX, y: ev.clientY });
+		vectors.changeLatestVectorTerminalPoint({ x: ev.clientX, y: ev.clientY });
 	}
 	function handleMouseUp(ev: MouseEvent) {
-		if (currentVector === null) throw Error("`currentVector` is null");
+		if (mouseCurrentlyDown !== true) throw Error("`mouseCurrentlyDown` is not true");
 
-		currentVector.changeTerminalPoint({ x: ev.clientX, y: ev.clientY });
-		currentVector = null;
+		vectors.changeLatestVectorTerminalPoint({ x: ev.clientX, y: ev.clientY });
+		mouseCurrentlyDown = false;
 	}
 </script>
 
