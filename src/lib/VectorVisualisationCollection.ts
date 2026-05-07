@@ -22,24 +22,30 @@ export default class VectorVisualisationCollection {
 	}
 
 	#addPoint(point: NamedPoint) {
+		if (this.#points.has(point.name))
+			throw Error(`point ${point.name} already exists`);
+
 		this.#points.set(point.name, { x: point.x, y: point.y } );
 	}
 
-	addVector(initialPoint: NamedPoint, terminalPoint: NamedPoint, vectorName: string) {
-		if (!this.#points.has(initialPoint.name))
-			this.#addPoint(initialPoint);
-		if (!this.#points.has(terminalPoint.name))
-			this.#addPoint(terminalPoint);
-
+	#addEdge(initialPointName: string, terminalPointName: string, edgeName: string) {
 		// if the initial point is named 'A', the terminal point 'B',
 		// and the vector 'c', the key will be 'A->B' and the value 'c'
-		this.#directedEdges.set(
-			initialPoint.name
+		const edgeID =
+			initialPointName
 			+ VectorVisualisationCollection.#pointNameSeparator
-			+ terminalPoint.name,
-			vectorName	
-		);
-		
+			+ terminalPointName;
+		if (this.#directedEdges.has(edgeID)) throw Error(`edge ${edgeID} already exists`);
+
+		this.#directedEdges.set(edgeID, edgeName);
+	}
+
+	addVector(initialPoint: NamedPoint, terminalPoint: NamedPoint, vectorName: string) {
+		this.#addPoint(initialPoint);
+		this.#addPoint(terminalPoint);
+
+		this.#addEdge(initialPoint.name, terminalPoint.name, vectorName);
+
 		this.#two.makeLine(initialPoint.x, initialPoint.y, terminalPoint.x, terminalPoint.y);
 	}
 }
