@@ -1,16 +1,10 @@
 import Two from 'two.js';
-import { Vector } from 'two.js/src/vector';
-import { type Coordinate, type NamedPoint } from "./basicTypes";
+import { type NamedPoint } from "./basicTypes";
+import DirectedGraph from './DirectedGraph';
 
 export default class VectorVisualisationCollection {
-	static #pointNameSeparator = "->";
-
 	#two: Two;
-	// the string name of each point is unique
-	#points: Map<string, Coordinate>;
-	// key: connections between points
-	// value: name of the vector that represents that connection
-	#directedEdges: Map<string, string>;
+	#directedGraph: DirectedGraph;
 
 	constructor(canvasElement: HTMLCanvasElement) {
 		this.#two = new Two({
@@ -18,69 +12,18 @@ export default class VectorVisualisationCollection {
 			domElement: canvasElement,
 			autostart: true,
 		});
-		this.#points = new Map();
-		this.#directedEdges = new Map();
-	}
-
-	static #getEdgeID(initialPointName: string, terminalPointName: string) {
-		return initialPointName
-			+ VectorVisualisationCollection.#pointNameSeparator
-			+ terminalPointName;
-	}
-
-	#addPoint(point: NamedPoint) {
-		if (this.#points.has(point.name))
-			throw Error(`point ${point.name} already exists`);
-
-		this.#points.set(point.name, { x: point.x, y: point.y } );
-	}
-
-	#addEdge(initialPointName: string, terminalPointName: string, edgeName: string) {
-		// if the initial point is named 'A', the terminal point 'B',
-		// and the vector 'c', the key will be 'A->B' and the value 'c'
-		const edgeID = VectorVisualisationCollection.#getEdgeID(
-			initialPointName, terminalPointName
-		);
-		if (this.#directedEdges.has(edgeID)) throw Error(`edge ${edgeID} already exists`);
-
-		this.#directedEdges.set(edgeID, edgeName);
-	}
-
-	#vectorNameBetweenNamedPoints(initialPointName: string, terminalPointName: string) {
-		const edgeID = VectorVisualisationCollection.#getEdgeID(
-			initialPointName, terminalPointName
-		);
-
-		return this.#directedEdges.get(edgeID);
-	}
-
-	vectorBetweenNamedPoints(initialPointName: string, terminalPointName: string) {
-		if (!this.#points.has(initialPointName))
-			throw Error(`initial point ${initialPointName} does not exist`);
-		if (!this.#points.has(terminalPointName))
-			throw Error(`terminal point ${terminalPointName} does not exist`);
-
-		// '!' at the end tells TypeScript it exists
-		const { x: x1, y: y1 } = this.#points.get(initialPointName)!;
-		const { x: x2, y: y2 } = this.#points.get(terminalPointName)!;
-		return new Vector(
-			x2 - x1,
-			y2 - y1
-		);
+		this.#directedGraph = new DirectedGraph();
 	}
 
 	addVector(initialPoint: NamedPoint, terminalPoint: NamedPoint, vectorName: string) {
-		this.#addPoint(initialPoint);
-		this.#addPoint(terminalPoint);
-
-		this.#addEdge(initialPoint.name, terminalPoint.name, vectorName);
+		this.#directedGraph.addEdge(initialPoint, terminalPoint, vectorName);
 
 		const { x: x1, y: y1 } = initialPoint;
 		const { x: x2, y: y2 } = terminalPoint;
 
 		this.#two.makeLine(x1, y1, x2, y2);
 
-		const unitVector = this.vectorBetweenNamedPoints(
+		const unitVector = this.#directedGraph.getVector(
 			initialPoint.name, terminalPoint.name
 		).setLength(1);
 		const xOffset = unitVector.x * 15;

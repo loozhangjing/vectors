@@ -26,14 +26,12 @@
 	function handleMouseUp(ev: MouseEvent) {
 		if (mouseCurrentlyDown !== true) throw Error("`mouseCurrentlyDown` is not true");
 
-		console.log(initialX, ev.clientX);
 		vectors.addVector(
 			{ name: pointNames.generate(), x: initialX, y: initialY },
 			{ name: pointNames.generate(), x: ev.clientX, y: ev.clientY },
 			vectorNames.generate(),
 		);
 		mouseCurrentlyDown = false;
-		console.log(vectors);
 	}
 </script>
 
