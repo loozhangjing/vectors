@@ -19,7 +19,7 @@
 	]);
 </script>
 
-<div style:width="100vw" style:height="100vh">
+<div>
 	<SvelteFlow
 	 bind:nodes
 	 bind:edges
@@ -29,3 +29,13 @@
 		<Background />
 	</SvelteFlow>
 </div>
+
+<style>
+	:global(body) {
+		margin: 0;
+	}
+	div {
+		width: 100vw;
+		height: 100vh;
+	}
+</style>
