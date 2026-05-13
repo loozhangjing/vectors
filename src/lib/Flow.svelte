@@ -1,48 +1,35 @@
 <script lang='ts'>
 	import { 
-		SvelteFlow, Background, ConnectionMode, useSvelteFlow,
+		SvelteFlow, Background, ConnectionMode, useSvelteFlow, useNodes, useEdges,
 		type Node, type Edge
 	} from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
 
 	import PointNode from '$lib/PointNode.svelte';
+	import VectorEdge from '$lib/VectorEdge.svelte';
+	import { beginAddingVector, finishAddingVector } from '$lib/addVector';
 
-	const { screenToFlowPosition } = useSvelteFlow();
-	
 	const nodeTypes = { point: PointNode };
+	const edgeTypes = { vector: VectorEdge };
 
 	let nodes: Node[] = $state.raw([]);
 	let edges: Edge[] = $state.raw([]);
 
-	let headNodeID: string;
-	function addPoint(clientX: number, clientY: number) {
+	// Svelte only allows these hooks to be defined during component initialisation
+	const { screenToFlowPosition } = useSvelteFlow();
+	const useNodesHook = useNodes();
+	const useEdgesHook = useEdges();
 
-		const { x, y } = screenToFlowPosition({ x: clientX, y: clientY });
-		// start point names with 'A'
-		const id = String.fromCharCode((nodes.at(-1)?.id || '@').charCodeAt(0) + 1);
-		nodes = nodes.concat({
-			id,
-			type: 'point',
-			position: { x, y },
-			data: { },
-		});
+	function handleMouseDown(ev: MouseEvent) {
+		// convert clientX and clientY to viewport coordinates
+		const { x, y } = screenToFlowPosition({ x: ev.clientX, y: ev.clientY });
 
-		return id;
+		beginAddingVector(x, y, useNodesHook);
 	}
-	function startAddingVector(ev: MouseEvent) {
-		headNodeID = addPoint(ev.clientX, ev.clientY);
-	}
-	function finishAddingVector(ev: MouseEvent) {
-		const tailNodeID = addPoint(ev.clientX, ev.clientY);
+	function handleMouseUp(ev: MouseEvent) {
+		const { x, y } = screenToFlowPosition({ x: ev.clientX, y: ev.clientY });
 
-		// start edge names with 'p'
-		const edgeID = String.fromCharCode((edges.at(-1)?.id || 'o').charCodeAt(0) + 1);
-		edges = edges.concat({
-			id: edgeID,
-			type: 'straight',
-			source: headNodeID,
-			target: tailNodeID
-		});
+		finishAddingVector(x, y, useNodesHook, useEdgesHook);
 	}
 </script>
 
@@ -50,9 +37,10 @@
 	bind:nodes
 	bind:edges
 	{nodeTypes}
+	{edgeTypes}
 	connectionMode={ConnectionMode.Loose}
-	onmousedown={startAddingVector}
-	onmouseup={finishAddingVector}
+	onmousedown={handleMouseDown}
+	onmouseup={handleMouseUp}
 	panOnDrag={[1, 2]}
 >
 	<!-- a value of [1, 2] for panOnDrag allows the viewport to be panned on mouse drag --> 

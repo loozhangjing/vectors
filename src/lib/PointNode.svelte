@@ -6,3 +6,10 @@
 
 <Handle type='source' position={Position.Top} />
 <div><span>{id}</span></div>
+
+<style>
+	span {
+		font-size: 2rem;
+		font-family: 'Georgia';
+	}
+</style>
