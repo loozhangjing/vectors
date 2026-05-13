@@ -1,36 +1,58 @@
 <script lang='ts'>
 	import { 
-		SvelteFlow, Background, ConnectionMode, useSvelteFlow, useNodes, useEdges,
-		type Node, type Edge
+		SvelteFlow, Background, ConnectionMode, ConnectionLineType, useSvelteFlow,
+		type Node, type Edge, type OnConnectEnd
 	} from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
 
 	import PointNode from '$lib/PointNode.svelte';
 	import VectorEdge from '$lib/VectorEdge.svelte';
-	import { beginAddingVector, finishAddingVector } from '$lib/addVector';
+	import { createVector } from '$lib/createVector';
 
 	const nodeTypes = { point: PointNode };
 	const edgeTypes = { vector: VectorEdge };
 
-	let nodes: Node[] = $state.raw([]);
-	let edges: Edge[] = $state.raw([]);
+	let nodes: Node[] = $state.raw([
+		{
+			id: 'A',
+			type: 'point',
+			position: { x: 100, y: 100 },
+			data: {}
+		},
+		{
+			id: 'B',
+			type: 'point',
+			position: { x: 400, y: 400 },
+			data: {}
+		}
+	]);
+	let edges: Edge[] = $state.raw([
+		{
+			id: 'p',
+			type: 'vector',
+			source: 'A',
+			target: 'B'
+		}
+	]);
 
-	// Svelte only allows these hooks to be defined during component initialisation
 	const { screenToFlowPosition } = useSvelteFlow();
-	const useNodesHook = useNodes();
-	const useEdgesHook = useEdges();
 
-	function handleMouseDown(ev: MouseEvent) {
-		// convert clientX and clientY to viewport coordinates
-		const { x, y } = screenToFlowPosition({ x: ev.clientX, y: ev.clientY });
+	const handleConnectEnd: OnConnectEnd = (event, connectionState) => {
+		const sourceNodeID = connectionState.fromNode?.id;
+		
+		if (!sourceNodeID) return console.log('no sourceNodeID, tail node creation aborted');
 
-		beginAddingVector(x, y, useNodesHook);
-	}
-	function handleMouseUp(ev: MouseEvent) {
-		const { x, y } = screenToFlowPosition({ x: ev.clientX, y: ev.clientY });
+		// event can be a TouchEvent or a MouseEvent
+		const { clientX, clientY } =
+			'changedTouches' in event ? event.changedTouches[0] : event;
 
-		finishAddingVector(x, y, useNodesHook, useEdgesHook);
-	}
+		const flowPosition = screenToFlowPosition({ x: clientX, y: clientY });
+
+		const { tailNode, edge } = createVector(sourceNodeID, flowPosition, nodes, edges);
+
+		nodes = [...nodes, tailNode];
+		edges = [...edges, edge];
+	};
 </script>
 
 <SvelteFlow
@@ -39,9 +61,9 @@
 	{nodeTypes}
 	{edgeTypes}
 	connectionMode={ConnectionMode.Loose}
-	onmousedown={handleMouseDown}
-	onmouseup={handleMouseUp}
+	connectionLineType={ConnectionLineType.Straight}
 	panOnDrag={[1, 2]}
+	onconnectend={handleConnectEnd}
 >
 	<!-- a value of [1, 2] for panOnDrag allows the viewport to be panned on mouse drag --> 
 	<!-- only when the middle or right mouse buttons are being held down -->

@@ -24,7 +24,8 @@
 <style>
 	:global(.svelte-flow__edge-path) {
 		/* make the connection start from the centre of a point node instead of from the top */
-		transform: translateY(5px);
+		/* this variable is defined in PointNode.svelte */
+		transform: translateY(var(--point-selection-radius));
 		stroke: black;
 	}
 	span {
