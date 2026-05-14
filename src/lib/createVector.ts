@@ -1,6 +1,5 @@
 import { type Node, type Edge, type XYPosition } from '@xyflow/svelte';
-
-const NODE_RADIUS = 75;
+import { POINT_NODE_HANDLE_RADIUS } from './constants';
 
 export function createVector(
 	sourceNodeID: string, position: XYPosition,
@@ -48,7 +47,7 @@ function findNodeIntersectingCursor(cursorPosition: XYPosition, nodes: Node[]) {
 			Infinity :
 			distance(cursorPosition, closestIntersectingNode.position);
 
-		if (currentDistance < NODE_RADIUS && currentDistance < closestFoundDistance)
+		if (currentDistance < POINT_NODE_HANDLE_RADIUS && currentDistance < closestFoundDistance)
 			closestIntersectingNode = node;
 	}
 	return closestIntersectingNode;

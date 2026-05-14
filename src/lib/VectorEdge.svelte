@@ -1,14 +1,16 @@
 <script lang='ts'>
 	import { BaseEdge, EdgeLabel, getStraightPath, type EdgeProps } from '@xyflow/svelte';
+	import { POINT_NODE_HANDLE_RADIUS } from './constants';
 
 	let { id, sourceX, sourceY, targetX, targetY }: EdgeProps = $props();
 
 	let [edgePath, labelX, labelY] = $derived(
+		// make the connection start from the centre of the handle of a point node instead of from the top
 		getStraightPath({
 			sourceX,
-			sourceY,
+			sourceY: sourceY + POINT_NODE_HANDLE_RADIUS,
 			targetX,
-			targetY
+			targetY: targetY + POINT_NODE_HANDLE_RADIUS
 		})
 	);
 </script>
@@ -23,9 +25,6 @@
 
 <style>
 	:global(.svelte-flow__edge-path) {
-		/* make the connection start from the centre of a point node instead of from the top */
-		/* this variable is defined in PointNode.svelte */
-		transform: translateY(var(--point-selection-radius));
 		stroke: black;
 	}
 	span {
