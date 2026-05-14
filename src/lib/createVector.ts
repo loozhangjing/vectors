@@ -1,19 +1,32 @@
 import { type Node, type Edge, type XYPosition } from '@xyflow/svelte';
 
+const NODE_RADIUS = 75;
+
 export function createVector(
 	sourceNodeID: string, position: XYPosition,
 	currentNodes: Node[], currentEdges: Edge[]
 ) {
-	const tailNodeID = findNextAvailableID(currentNodes);
+	let tailNode: Node | undefined;
+	let tailNodeID: string;
+	let edge: Edge;
 
-	const tailNode: Node = {
-		type: 'point',
-		id: tailNodeID,
-		position,
-		data: { },
-	};
+	const intersectingNode = findNodeIntersectingCursor(position, currentNodes);
 
-	const edge: Edge = {
+	if (intersectingNode !== undefined) {
+		// don't return a node to prevent overwriting the existing node that's being intersected
+		tailNode = undefined;
+		tailNodeID = intersectingNode.id;
+	} else {
+		tailNodeID = findNextAvailableID(currentNodes);
+		tailNode = {
+			type: 'point',
+			id: tailNodeID,
+			position,
+			data: {},
+		};
+	}
+
+	edge = {
 		type: 'vector',
 		id: findNextAvailableID(currentEdges),
 		source: sourceNodeID,
@@ -21,6 +34,24 @@ export function createVector(
 	};
 
 	return { tailNode, edge };
+}
+
+const distance = (pos1: XYPosition, pos2: XYPosition) =>
+	Math.sqrt((pos2.x - pos1.x) ** 2 + (pos2.y - pos1.y) ** 2);
+
+function findNodeIntersectingCursor(cursorPosition: XYPosition, nodes: Node[]) {
+	let closestIntersectingNode: Node | undefined;
+
+	for (const node of nodes) {
+		const currentDistance = distance(cursorPosition, node.position);
+		const closestFoundDistance = closestIntersectingNode === undefined ?
+			Infinity :
+			distance(cursorPosition, closestIntersectingNode.position);
+
+		if (currentDistance < NODE_RADIUS && currentDistance < closestFoundDistance)
+			closestIntersectingNode = node;
+	}
+	return closestIntersectingNode;
 }
 
 function findNextAvailableID(nodesOrEdges: Node[] | Edge[]) {

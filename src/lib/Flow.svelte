@@ -50,11 +50,21 @@
 
 		const { tailNode, edge } = createVector(sourceNodeID, flowPosition, nodes, edges);
 
-		nodes = [...nodes, tailNode];
+		if (tailNode !== undefined)
+			nodes = [...nodes, tailNode];
 		edges = [...edges, edge];
 	};
 </script>
 
+<!-- a loose `connectionMode` allows connections between any two handles -->
+<!-- (not necessarily from a source handle to a target handle) -->
+
+<!-- `panOnDrag{[1, 2]}` allows the viewport to be panned on mouse drag --> 
+<!-- only when the middle or right mouse buttons are being held down -->
+
+<!-- setting the `onbeforeconnect` callback to return `false` prevents SvelteFlow from automatically -->
+<!-- adding a connection when the mouse is released over an existing node -->
+<!-- because the edge returned from `createVector()` is added manually to `edges` -->
 <SvelteFlow
 	bind:nodes
 	bind:edges
@@ -63,9 +73,8 @@
 	connectionMode={ConnectionMode.Loose}
 	connectionLineType={ConnectionLineType.Straight}
 	panOnDrag={[1, 2]}
+	onbeforeconnect={() => false}
 	onconnectend={handleConnectEnd}
 >
-	<!-- a value of [1, 2] for panOnDrag allows the viewport to be panned on mouse drag --> 
-	<!-- only when the middle or right mouse buttons are being held down -->
 	<Background />
 </SvelteFlow>
