@@ -1,13 +1,17 @@
 <script lang='ts'>
 	import { SvelteFlowProvider } from '@xyflow/svelte';
 	import Flow from '$lib/Flow.svelte';
+	import ResultPane from '$lib/ResultPane.svelte';
 </script>
 
-<div id='viewport'> 
-	<SvelteFlowProvider>
+<SvelteFlowProvider>
+	<div id='viewport'> 
 		<Flow />
-	</SvelteFlowProvider>
-</div>
+	</div>
+	<div id='result-pane-container'>
+		<ResultPane />
+	</div>
+</SvelteFlowProvider>
 
 <style>
 	:global(body) {
@@ -16,5 +20,14 @@
 	div#viewport {
 		width: 100vw;
 		height: 100vh;
+	}
+	div#result-pane-container {
+		position: absolute;
+		top: 0;
+		right: 0;
+		margin: 10px;
+		padding: 10px;
+		background-color: white;
+		border: 2px solid black;
 	}
 </style>

@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import { 
+	import {
 		SvelteFlow, Background, ConnectionMode, ConnectionLineType, useSvelteFlow,
 		type Node, type Edge, type OnConnectEnd
 	} from '@xyflow/svelte';
