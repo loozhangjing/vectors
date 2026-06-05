@@ -5,16 +5,20 @@
 		tailNodeId: string,
 	}
 
+	import { untrack } from 'svelte';
 	import { useSvelteFlow, useNodeConnections } from '@xyflow/svelte';
 	const { getNodes } = useSvelteFlow();
 
 	let sourceNodeId = $state('A');
 	let tailNodeId = $state('B');
+	let paths: NamedVector[][] = $state([]);
 
 	$effect(() => {
 		const { current: sourceNodeConnections } = useNodeConnections({ id: sourceNodeId });
 
-		const paths: NamedVector[][] = [];
+		// all references to the `paths` variable must be inside an `untrack()`, so that changes to
+		// `paths` aren't tracked, or else this whole $effect function would run again
+		untrack(() => paths = []);
 
 		for (const connection of sourceNodeConnections) {
 			// the source and target nodes of a NodeConnection object don't necessarily correspond to
@@ -29,14 +33,12 @@
 
 			// if the source node and tail node are connected (share an edge)
 			if (nextNodeId === tailNodeId) {
-				paths.push(nextPath);
+				untrack(() => paths.push(nextPath));
 				continue;
 			}
 
 			findPathToNodeRecursively(tailNodeId, nextPath);
 		}
-
-		console.log(paths);
 
 		function findPathToNodeRecursively(targetNodeId: string, currentPath: NamedVector[]) {
 			const previousVector = currentPath.at(-1);
@@ -62,7 +64,7 @@
 				const nextPath = [...currentPath, nextVector]
 
 				if (nextTailNodeId === targetNodeId) {
-					paths.push(nextPath);
+					untrack(() => paths.push(nextPath));
 					return;
 				}
 				findPathToNodeRecursively(targetNodeId, nextPath);
@@ -90,5 +92,14 @@
 </div>
 
 <h2>Results</h2>
+<ul>
+	{#each paths as path}
+		<li>
+			{#each path as namedVector, index}
+				{namedVector.headNodeId}{namedVector.tailNodeId}{#if index < path.length - 1}+{/if}
+			{/each}
+		</li>
+	{/each}
+</ul>
 <style>
 </style>
