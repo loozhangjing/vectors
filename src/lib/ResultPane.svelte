@@ -14,6 +14,7 @@
 	let paths: NamedVector[][] = $state([]);
 
 	$effect(() => {
+		console.log('---', 'STARTING POINT OR ENDING POINT WAS CHANGED', '---');
 		const { current: sourceNodeConnections } = useNodeConnections({ id: sourceNodeId });
 
 		// all references to the `paths` variable must be inside an `untrack()`, so that changes to
@@ -45,28 +46,36 @@
 
 			if (!previousVector) throw new Error("`currentPath` is empty");
 
-			const { headNodeId: prevHeadNodeId, tailNodeId: prevTailNodeId } = previousVector;
+			const { tailNodeId: prevTailNodeId } = previousVector;
 			const { current: connections } = useNodeConnections({ id: prevTailNodeId });
 
-			// upon reaching a leaf node (at which point the only direction to go is back), stop traversing
-			if (connections.length <= 1) return;
-
+			console.log('>>>', 'current path:', pathToDebugText(currentPath));
 			for (const connection of connections) {
-				// don't traverse in the direction we came from
-				if (connection.source === prevHeadNodeId || connection.target === prevHeadNodeId) continue;
-
 				const nextTailNodeId = connection.source === prevTailNodeId ? connection.target : connection.source;
+
+				const nextNodeAlreadyTraversed = nodeExistsInVectorArray(nextTailNodeId, currentPath);
+				console.log(nextTailNodeId, 'exists in the current path:', nextNodeAlreadyTraversed);
+
+				// don't go down a path already taken before to prevent infinite recursion
+				if (nextNodeAlreadyTraversed === true) continue;
+
+				console.log('continuing path with node', nextTailNodeId, '...');
+
 				const nextVector = {
 					name: connection.edgeId,
 					headNodeId: prevTailNodeId,
 					tailNodeId: nextTailNodeId,
 				};
-				const nextPath = [...currentPath, nextVector]
+				const nextPath = [...currentPath, nextVector];
 
+				// found a complete path to the target node
 				if (nextTailNodeId === targetNodeId) {
-					untrack(() => paths.push(nextPath));
+					untrack(() => {
+						paths.push(nextPath);
+					});
 					return;
 				}
+
 				findPathToNodeRecursively(targetNodeId, nextPath);
 			}
 		}
@@ -79,6 +88,22 @@
 		// TypeScript currently errors because it thinks `window.MathJax` does not exist
 		window.MathJax.typeset();
 	});
+
+	function nodeExistsInVectorArray(nodeId: string, path: NamedVector[]) {
+		for (const vector of path) {
+			if (vector.headNodeId === nodeId || vector.tailNodeId === nodeId) return true;
+		}
+		return false;
+	}
+
+	// for logging purposes only
+	function pathToDebugText(path: NamedVector[]) {
+		const nodes = [path[0].headNodeId];
+		for (const vector of path) {
+			nodes.push(vector.tailNodeId);
+		}
+		return nodes.join(' -> ');
+	}
 </script>
 
 <div>
