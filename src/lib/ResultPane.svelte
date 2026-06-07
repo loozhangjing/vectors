@@ -128,13 +128,27 @@
 	<!-- the mathematics previously typeset by MathJax will be removed every time `paths` is updated -->
 	{#key paths}
 	{#each paths as path}
-		<li>
-			$${#each path as namedVector, index}
-				<!-- prevent the curly braces meant to be LaTeX from being misinterpreted by Svelte -->
-				<!-- by putting them inside JavaScript strings -->
-				\overrightarrow{'{'}{namedVector.headNodeId}{namedVector.tailNodeId}{'}'}{#if index < path.length - 1}+{/if}
-			{/each}$$
-		</li>
+		<li>$$
+			<!-- use the 'aligned' environment to align all equal signs preceded by an ampersand (&) -->
+			\begin{'{'}aligned{'}'}
+
+			<!-- prevent the curly braces meant to be LaTeX from being misinterpreted by Svelte -->
+			<!-- by putting them inside JavaScript strings -->
+			\overrightarrow{'{'}{sourceNodeId}{tailNodeId}{'}'}
+
+			&= {#each path as namedVector, index}
+				\overrightarrow{'{'}{namedVector.headNodeId}{namedVector.tailNodeId}{'}'}
+				{#if index < path.length - 1}+{/if}
+			{/each}
+
+			\newline
+
+			&= {#each path as namedVector, index}
+				\underset{'{'}\sim{'}'}{'{'}{namedVector.name}{'}'}
+				{#if index < path.length - 1}+{/if}
+			{/each}
+			\end{'{'}aligned{'}'}
+		$$</li>
 	{/each}
 	{/key}
 </ul>
