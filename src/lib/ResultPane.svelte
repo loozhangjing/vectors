@@ -4,7 +4,7 @@
 		headNodeId: string,
 		tailNodeId: string,
 	}
-
+	
 	import { untrack } from 'svelte';
 	import { useSvelteFlow, useNodeConnections } from '@xyflow/svelte';
 	const { getNodes } = useSvelteFlow();
@@ -71,6 +71,14 @@
 			}
 		}
 	});
+
+	$effect(() => {
+		// access `paths` so Svelte runs this callback whenever `paths` is updated
+		paths;
+
+		// TypeScript currently errors because it thinks `window.MathJax` does not exist
+		window.MathJax.typeset();
+	});
 </script>
 
 <div>
@@ -93,13 +101,19 @@
 
 <h2>Results</h2>
 <ul>
+	<!-- "Key blocks destroy and recreate their contents when the value of an expression changes." - Svelte docs -->
+	<!-- the mathematics previously typeset by MathJax will be removed every time `paths` is updated -->
+	{#key paths}
 	{#each paths as path}
 		<li>
-			{#each path as namedVector, index}
-				{namedVector.headNodeId}{namedVector.tailNodeId}{#if index < path.length - 1}+{/if}
-			{/each}
+			$${#each path as namedVector, index}
+				<!-- prevent the curly braces meant to be LaTeX from being misinterpreted by Svelte -->
+				<!-- by putting them inside JavaScript strings -->
+				\overrightarrow{'{'}{namedVector.headNodeId}{namedVector.tailNodeId}{'}'}{#if index < path.length - 1}+{/if}
+			{/each}$$
 		</li>
 	{/each}
+	{/key}
 </ul>
 <style>
 </style>
