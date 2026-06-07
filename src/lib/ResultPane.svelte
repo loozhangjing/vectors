@@ -73,7 +73,7 @@
 					untrack(() => {
 						paths.push(nextPath);
 					});
-					return;
+					continue;
 				}
 
 				findPathToNodeRecursively(targetNodeId, nextPath);
