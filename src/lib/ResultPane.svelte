@@ -106,16 +106,14 @@
 	}
 </script>
 
-<div>
+<div id='source-and-tail-node-select-container'>
 	<label for="sourceNodeSelect">Starting point:</label>
 	<select id="sourceNodeSelect" bind:value={sourceNodeId}>
 		{#each getNodes() as node}
 			<option value={node.id}>{node.id}</option>
 		{/each}
 	</select>
-</div>
 
-<div>
 	<label for="tailNodeSelect">Ending point:</label>
 	<select id="tailNodeSelect" bind:value={tailNodeId}>
 		{#each getNodes() as node}
@@ -140,5 +138,22 @@
 	{/each}
 	{/key}
 </ul>
+
 <style>
+	#source-and-tail-node-select-container {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 5px 10px;
+		align-items: center;
+	}
+	select, option {
+		font-family: 'Luciole';
+		font-size: 1rem;
+		padding: 5px 10px;
+		border: 1.5px solid black;
+		border-radius: 0;
+	}
+	select:hover {
+		cursor: pointer;
+	}
 </style>
