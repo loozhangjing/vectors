@@ -7,6 +7,7 @@
 	
 	import { untrack } from 'svelte';
 	import { useSvelteFlow, useNodeConnections } from '@xyflow/svelte';
+	import { typesetMathJaxAttachment } from './utils';
 	const { getNodes } = useSvelteFlow();
 
 	let sourceNodeId = $state('A');
@@ -81,14 +82,6 @@
 		}
 	});
 
-	$effect(() => {
-		// access `paths` so Svelte runs this callback whenever `paths` is updated
-		paths;
-
-		// TypeScript currently errors because it thinks `window.MathJax` does not exist
-		window.MathJax.typeset();
-	});
-
 	function nodeExistsInVectorArray(nodeId: string, path: NamedVector[]) {
 		for (const vector of path) {
 			if (vector.headNodeId === nodeId || vector.tailNodeId === nodeId) return true;
@@ -128,7 +121,7 @@
 	<!-- the mathematics previously typeset by MathJax will be removed every time `paths` is updated -->
 	{#key paths}
 	{#each paths as path}
-		<li>$$
+		<li {@attach typesetMathJaxAttachment}>$$
 			<!-- use the 'aligned' environment to align all equal signs preceded by an ampersand (&) -->
 			\begin{'{'}aligned{'}'}
 

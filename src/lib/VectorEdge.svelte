@@ -1,6 +1,7 @@
 <script lang='ts'>
 	import { BaseEdge, EdgeLabel, getStraightPath, type EdgeProps } from '@xyflow/svelte';
 	import { POINT_NODE_HANDLE_RADIUS } from './constants';
+	import { typesetMathJaxAttachment } from './utils';
 
 	let { id, sourceX, sourceY, targetX, targetY }: EdgeProps = $props();
 
@@ -18,8 +19,7 @@
 <BaseEdge {id} path={edgePath} />
 <EdgeLabel x={labelX} y={labelY}>
 	<div class='label-container'>
-		<span>{id}</span>
-		<span>~</span>
+		<span {@attach typesetMathJaxAttachment}>$$\underset{'{'}\sim{'}'}{'{'}{id}{'}'}$$</span>
 	</div>
 </EdgeLabel>
 
@@ -27,17 +27,7 @@
 	:global(.svelte-flow__edge-path) {
 		stroke: black;
 	}
-	span {
+	.label-container > span {
 		font-size: 32px;
-		font-family: 'Georgia';
-		font-weight: bold;
-		font-style: italic;
-	}
-	span:last-child {
-		/* force the ~ onto a new line, below the vector name */
-		display: block;
-		position: absolute;
-		left: 0%;
-		top: 60%;
 	}
 </style>
