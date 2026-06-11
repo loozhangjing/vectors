@@ -30,4 +30,8 @@
 	.label-container > span {
 		font-size: 32px;
 	}
+	.label-container > span > :global(mjx-container) {
+		/* the default margin covers too much of the vector line */
+		margin: 0 !important;
+	}
 </style>

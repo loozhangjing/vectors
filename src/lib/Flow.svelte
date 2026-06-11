@@ -16,13 +16,13 @@
 		{
 			id: 'A',
 			type: 'point',
-			position: { x: 100, y: 100 },
+			position: { x: 300, y: 100 },
 			data: {}
 		},
 		{
 			id: 'B',
 			type: 'point',
-			position: { x: 400, y: 400 },
+			position: { x: 600, y: 400 },
 			data: {}
 		}
 	]);
