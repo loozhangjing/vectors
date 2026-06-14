@@ -1,5 +1,5 @@
 import { type Node, type Edge, type XYPosition } from '@xyflow/svelte';
-import { POINT_NODE_HANDLE_RADIUS } from './constants';
+import { POINT_NODE_HANDLE_RADIUS } from '../config';
 
 export function createVector(
 	sourceNodeID: string, position: XYPosition,

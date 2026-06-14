@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
-	import { POINT_NODE_HANDLE_RADIUS } from './constants';
-	import { typesetMathJaxAttachment } from './utils.ts';
+	import { POINT_NODE_HANDLE_RADIUS } from '../config';
+	import { typesetMathJaxAttachment } from '../utils.ts';
 
 	const handleLength = `${POINT_NODE_HANDLE_RADIUS * 2}px`;
 	let { id }: NodeProps = $props();

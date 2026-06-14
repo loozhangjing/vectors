@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import { BaseEdge, EdgeLabel, getStraightPath, type EdgeProps } from '@xyflow/svelte';
-	import { POINT_NODE_HANDLE_RADIUS } from './constants';
-	import { typesetMathJaxAttachment } from './utils';
+	import { POINT_NODE_HANDLE_RADIUS } from '../config';
+	import { typesetMathJaxAttachment } from '../utils';
 
 	let { id, sourceX, sourceY, targetX, targetY }: EdgeProps = $props();
 

@@ -5,9 +5,9 @@
 	} from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
 
-	import PointNode from '$lib/PointNode.svelte';
-	import VectorEdge from '$lib/VectorEdge.svelte';
-	import { createVector } from '$lib/createVector';
+	import PointNode from '$lib/components/PointNode.svelte';
+	import VectorEdge from '$lib/components/VectorEdge.svelte';
+	import { createVector } from '$lib/functions/createVector';
 
 	const nodeTypes = { point: PointNode };
 	const edgeTypes = { vector: VectorEdge };

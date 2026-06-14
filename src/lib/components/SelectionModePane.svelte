@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import addIcon from '$lib/assets/add_32dp_000000_FILL0_wght400_GRAD0_opsz40.svg';
 	import editIcon from '$lib/assets/edit_32dp_000000_FILL0_wght400_GRAD0_opsz40.svg';
-	import { SelectionMode } from '$lib/constants';
+	import { SelectionMode } from '$lib/types';
 
 	let { selectedSelectionMode = $bindable(SelectionMode.Add) } = $props();
 </script>

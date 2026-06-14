@@ -7,7 +7,7 @@
 	
 	import { untrack } from 'svelte';
 	import { useSvelteFlow, useNodeConnections } from '@xyflow/svelte';
-	import { typesetMathJaxAttachment } from './utils';
+	import { typesetMathJaxAttachment } from '../utils';
 	const { getNodes } = useSvelteFlow();
 
 	let sourceNodeId = $state('A');

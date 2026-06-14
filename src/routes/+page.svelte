@@ -1,8 +1,8 @@
 <script lang='ts'>
 	import { SvelteFlowProvider } from '@xyflow/svelte';
-	import Flow from '$lib/Flow.svelte';
-	import ResultPane from '$lib/ResultPane.svelte';
-	import SelectionModePane from '$lib/SelectionModePane.svelte';
+	import Flow from '$lib/components/Flow.svelte';
+	import ResultPane from '$lib/components/ResultPane.svelte';
+	import SelectionModePane from '$lib/components/SelectionModePane.svelte';
 
 	let currentSelectionMode = $state('');
 </script>

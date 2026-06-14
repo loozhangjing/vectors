@@ -1,0 +1,1 @@
+export const POINT_NODE_HANDLE_RADIUS = 75;
