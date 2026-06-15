@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import { BaseEdge, EdgeLabel, getStraightPath, type EdgeProps } from '@xyflow/svelte';
 	import { POINT_NODE_HANDLE_RADIUS } from '../config';
-	import { typesetMathJaxAttachment } from '../utils';
+	import { typesetMathJaxAttachment, latexTildeUnderLetterCommand } from '../utils';
 
 	let { id, sourceX, sourceY, targetX, targetY }: EdgeProps = $props();
 
@@ -19,7 +19,7 @@
 <BaseEdge {id} path={edgePath} />
 <EdgeLabel x={labelX} y={labelY}>
 	<div class='label-container'>
-		<span {@attach typesetMathJaxAttachment}>$$\underset{'{'}\sim{'}'}{'{'}{id}{'}'}$$</span>
+		<span {@attach typesetMathJaxAttachment}>$${latexTildeUnderLetterCommand(id)}$$</span>
 	</div>
 </EdgeLabel>
 
