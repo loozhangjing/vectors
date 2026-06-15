@@ -1,10 +1,9 @@
 <script lang='ts'>
 	import addIcon from '$lib/assets/add_32dp_000000_FILL0_wght400_GRAD0_opsz40.svg';
 	import editIcon from '$lib/assets/edit_32dp_000000_FILL0_wght400_GRAD0_opsz40.svg';
-	import { SelectionMode } from '$lib/types';
-	import { DEFAULT_SELECTION_MODE } from '$lib/config';
 
-	let { selectedSelectionMode = $bindable(DEFAULT_SELECTION_MODE) } = $props();
+	import { SelectionMode } from '$lib/types';
+	import { selectedSelectionMode } from '$lib/state.svelte';
 </script>
 
 <fieldset>
@@ -16,7 +15,7 @@
 		  name='select-mode'
 		  id='add-mode'
 		  value={SelectionMode.Add}
-		  bind:group={selectedSelectionMode} />
+		  bind:group={selectedSelectionMode.current} />
 	</div>
 
 	<div>
@@ -26,7 +25,7 @@
 		  name='select-mode'
 		  id='edit-mode'
 		  value={SelectionMode.Edit}
-		  bind:group={selectedSelectionMode} />
+		  bind:group={selectedSelectionMode.current} />
 	</div>
 </fieldset>
 

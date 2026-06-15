@@ -2,17 +2,28 @@
 	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
 	import { POINT_NODE_HANDLE_RADIUS } from '../config';
 	import { typesetMathJaxAttachment } from '../utils.ts';
+	import { SelectionMode } from '$lib/types';
+	import { selectedSelectionMode } from '$lib/state.svelte';
 
 	const handleLength = `${POINT_NODE_HANDLE_RADIUS * 2}px`;
 	let { id }: NodeProps = $props();
 </script>
 
-<div class='handle-container'>
+<div class={{
+	 'handle-container': true,
+	 'disable-handle': selectedSelectionMode.current === SelectionMode.Edit,
+}}>
 	<Handle type='source' position={Position.Top} style='width: {handleLength}; height: {handleLength}' />
 </div>
-<div class='label-container' {@attach typesetMathJaxAttachment}><span>$${id}$$</span></div>
+<div class={{
+	 'label-container': true,
+	 'nodrag': selectedSelectionMode.current === SelectionMode.Add,
+}} {@attach typesetMathJaxAttachment}><span>$${id}$$</span></div>
 
 <style>
+	.handle-container.disable-handle > :global(.svelte-flow__handle) {
+		visibility: hidden;
+	}
 	.handle-container > :global(.svelte-flow__handle) {
 		/* make the point handle invisible unless hovered upon */
 		opacity: 0%;
@@ -28,5 +39,8 @@
 	/* remove space above rendered math */
 	.label-container > span > :global(mjx-container) {
 		margin-top: 0 !important;
+	}
+	.label-container:not(.nodrag) > span > :global(mjx-container):hover {
+		cursor: grab;
 	}
 </style>

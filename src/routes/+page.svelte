@@ -3,8 +3,6 @@
 	import Flow from '$lib/components/Flow.svelte';
 	import ResultPane from '$lib/components/ResultPane.svelte';
 	import SelectionModePane from '$lib/components/SelectionModePane.svelte';
-
-	let currentSelectionMode = $state('');
 </script>
 
 <SvelteFlowProvider>
@@ -15,7 +13,7 @@
 		<ResultPane />
 	</div>
 	<div id='select-mode-container'>
-		<SelectionModePane bind:selectedSelectionMode={currentSelectionMode} />
+		<SelectionModePane />
 	</div>
 </SvelteFlowProvider>
 
