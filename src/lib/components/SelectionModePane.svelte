@@ -3,7 +3,7 @@
 	import editIcon from '$lib/assets/edit_32dp_000000_FILL0_wght400_GRAD0_opsz40.svg';
 
 	import { SelectionMode } from '$lib/types';
-	import { selectedSelectionMode } from '$lib/state.svelte';
+	import GlobalState from '$lib/GlobalState.svelte';
 </script>
 
 <fieldset>
@@ -15,7 +15,7 @@
 		  name='select-mode'
 		  id='add-mode'
 		  value={SelectionMode.Add}
-		  bind:group={selectedSelectionMode.current} />
+		  bind:group={GlobalState.selectionMode} />
 	</div>
 
 	<div>
@@ -25,7 +25,7 @@
 		  name='select-mode'
 		  id='edit-mode'
 		  value={SelectionMode.Edit}
-		  bind:group={selectedSelectionMode.current} />
+		  bind:group={GlobalState.selectionMode} />
 	</div>
 </fieldset>
 

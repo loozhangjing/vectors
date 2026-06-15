@@ -1,15 +1,17 @@
 <script lang='ts'>
 	import {
 		SvelteFlow, Background, ConnectionMode, ConnectionLineType, useSvelteFlow,
-		type Node, type Edge, type OnConnectEnd
+		type OnConnectEnd
 	} from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
 
-	import { DEFAULT_NODES, DEFAULT_EDGES, NODE_TYPES, EDGE_TYPES } from '$lib/config';
+	import PointNode from '$lib/components/PointNode.svelte';
+	import VectorEdge from '$lib/components/VectorEdge.svelte';
 	import { createVector } from '$lib/functions/createVector';
+	import GlobalState from '$lib/GlobalState.svelte';
 
-	let nodes: Node[] = $state.raw(DEFAULT_NODES);
-	let edges: Edge[] = $state.raw(DEFAULT_EDGES);
+	const NODE_TYPES = { point: PointNode };
+	const EDGE_TYPES = { vector: VectorEdge };
 
 	const { screenToFlowPosition } = useSvelteFlow();
 
@@ -24,11 +26,11 @@
 
 		const flowPosition = screenToFlowPosition({ x: clientX, y: clientY });
 
-		const { tailNode, edge } = createVector(sourceNodeID, flowPosition, nodes, edges);
+		const { tailNode, edge } = createVector(sourceNodeID, flowPosition, GlobalState.nodes, GlobalState.edges);
 
 		if (tailNode !== undefined)
-			nodes = [...nodes, tailNode];
-		edges = [...edges, edge];
+			GlobalState.nodes = [...GlobalState.nodes, tailNode];
+		GlobalState.edges = [...GlobalState.edges, edge];
 	};
 </script>
 
@@ -42,8 +44,8 @@
 <!-- adding a connection when the mouse is released over an existing node -->
 <!-- because the edge returned from `createVector()` is added manually to `edges` -->
 <SvelteFlow
-	bind:nodes
-	bind:edges
+	bind:nodes={GlobalState.nodes}
+	bind:edges={GlobalState.edges}
 	nodeTypes={NODE_TYPES}
 	edgeTypes={EDGE_TYPES}
 	connectionMode={ConnectionMode.Loose}

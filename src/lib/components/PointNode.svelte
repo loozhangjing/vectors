@@ -3,7 +3,7 @@
 	import { POINT_NODE_HANDLE_RADIUS } from '../config';
 	import { typesetMathJaxAttachment } from '../utils.ts';
 	import { SelectionMode } from '$lib/types';
-	import { selectedSelectionMode } from '$lib/state.svelte';
+	import GlobalState from '$lib/GlobalState.svelte';
 
 	const handleLength = `${POINT_NODE_HANDLE_RADIUS * 2}px`;
 	let { id }: NodeProps = $props();
@@ -11,13 +11,13 @@
 
 <div class={{
 	 'handle-container': true,
-	 'disable-handle': selectedSelectionMode.current === SelectionMode.Edit,
+	 'disable-handle': GlobalState.selectionMode === SelectionMode.Edit,
 }}>
 	<Handle type='source' position={Position.Top} style='width: {handleLength}; height: {handleLength}' />
 </div>
 <div class={{
 	 'label-container': true,
-	 'nodrag': selectedSelectionMode.current === SelectionMode.Add,
+	 'nodrag': GlobalState.selectionMode === SelectionMode.Add,
 }} {@attach typesetMathJaxAttachment}><span>$${id}$$</span></div>
 
 <style>

@@ -1,9 +1,4 @@
-import PointNode from '$lib/components/PointNode.svelte';
-import VectorEdge from '$lib/components/VectorEdge.svelte';
 import { SelectionMode } from '$lib/types';
-
-export const NODE_TYPES = { point: PointNode };
-export const EDGE_TYPES = { vector: VectorEdge };
 
 export const DEFAULT_NODES = [
 	{
