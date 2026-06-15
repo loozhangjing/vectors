@@ -5,35 +5,11 @@
 	} from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
 
-	import PointNode from '$lib/components/PointNode.svelte';
-	import VectorEdge from '$lib/components/VectorEdge.svelte';
+	import { DEFAULT_NODES, DEFAULT_EDGES, NODE_TYPES, EDGE_TYPES } from '$lib/config';
 	import { createVector } from '$lib/functions/createVector';
 
-	const nodeTypes = { point: PointNode };
-	const edgeTypes = { vector: VectorEdge };
-
-	let nodes: Node[] = $state.raw([
-		{
-			id: 'A',
-			type: 'point',
-			position: { x: 300, y: 100 },
-			data: {}
-		},
-		{
-			id: 'B',
-			type: 'point',
-			position: { x: 600, y: 400 },
-			data: {}
-		}
-	]);
-	let edges: Edge[] = $state.raw([
-		{
-			id: 'p',
-			type: 'vector',
-			source: 'A',
-			target: 'B'
-		}
-	]);
+	let nodes: Node[] = $state.raw(DEFAULT_NODES);
+	let edges: Edge[] = $state.raw(DEFAULT_EDGES);
 
 	const { screenToFlowPosition } = useSvelteFlow();
 
@@ -68,8 +44,8 @@
 <SvelteFlow
 	bind:nodes
 	bind:edges
-	{nodeTypes}
-	{edgeTypes}
+	nodeTypes={NODE_TYPES}
+	edgeTypes={EDGE_TYPES}
 	connectionMode={ConnectionMode.Loose}
 	connectionLineType={ConnectionLineType.Straight}
 	panOnDrag={[1, 2]}

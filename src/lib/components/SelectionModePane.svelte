@@ -2,8 +2,9 @@
 	import addIcon from '$lib/assets/add_32dp_000000_FILL0_wght400_GRAD0_opsz40.svg';
 	import editIcon from '$lib/assets/edit_32dp_000000_FILL0_wght400_GRAD0_opsz40.svg';
 	import { SelectionMode } from '$lib/types';
+	import { DEFAULT_SELECTION_MODE } from '$lib/config';
 
-	let { selectedSelectionMode = $bindable(SelectionMode.Add) } = $props();
+	let { selectedSelectionMode = $bindable(DEFAULT_SELECTION_MODE) } = $props();
 </script>
 
 <fieldset>
