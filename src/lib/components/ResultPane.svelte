@@ -1,15 +1,10 @@
 <script lang='ts'>
-	interface NamedVector {
-		name: string,
-		headNodeId: string,
-		tailNodeId: string,
-	}
-	
 	import { untrack } from 'svelte';
 	import { useSvelteFlow, useNodeConnections } from '@xyflow/svelte';
 	import {
 		typesetMathJaxAttachment, latexTildeUnderLetterCommand, latexRightArrowAboveLettersCommand
-	} from '../utils';
+	} from '$lib/utils';
+	import { type NamedVector } from '$lib/types';
 
 	const { getNodes } = useSvelteFlow();
 

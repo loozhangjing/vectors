@@ -3,3 +3,9 @@ export const enum SelectionMode {
 	Edit = 'edit',
 	Move = 'move',
 }
+
+export interface NamedVector {
+	name: string,
+	headNodeId: string,
+	tailNodeId: string,
+}

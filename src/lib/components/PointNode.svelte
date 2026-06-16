@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import { Handle, Position, type NodeProps } from '@xyflow/svelte';
-	import { POINT_NODE_HANDLE_RADIUS } from '../config';
-	import { typesetMathJaxAttachment } from '../utils.ts';
+	import { POINT_NODE_HANDLE_RADIUS } from '$lib/config';
+	import { typesetMathJaxAttachment } from '$lib/utils';
 	import { SelectionMode } from '$lib/types';
 	import GlobalState from '$lib/GlobalState.svelte';
 
