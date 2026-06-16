@@ -19,7 +19,6 @@
 		})
 	);
 
-	// offset the edge label so that it doesn't render directly above the edge line
 	let componentX = $derived(targetX - sourceX);
 	let componentY = $derived(targetY - sourceY);
 	let magnitude = $derived(Math.sqrt(componentX ** 2 + componentY ** 2));
@@ -27,6 +26,7 @@
 	let absoluteAngle = $derived(Math.acos(componentY / magnitude));
 	let angle = $derived(componentX > 0 ? -absoluteAngle : absoluteAngle);
 
+	// offset the edge label so that it doesn't render directly above the edge line
 	let perpendicularX = $derived(labelX + (componentY / magnitude * EDGE_LABEL_OFFSET_X));
 	let perpendicularY = $derived(labelY + (componentX / magnitude * EDGE_LABEL_OFFSET_Y));
 </script>

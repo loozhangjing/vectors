@@ -23,10 +23,11 @@
 		for (const connection of sourceNodeConnections) {
 			// the source and target nodes of a NodeConnection object don't necessarily correspond to
 			// the head and tail nodes of the vector in the direction we're going
-			const nextNodeId = connection.source === sourceNodeId ? connection.target : connection.source;
+			const sourceNodeIsSource = connection.source === sourceNodeId;
+			const nextNodeId = sourceNodeIsSource ? connection.target : connection.source;
 
 			const nextPath = [{
-				name: connection.edgeId,
+				name: (sourceNodeIsSource ? '' : '-') + connection.edgeId,
 				headNodeId: sourceNodeId,
 				tailNodeId: nextNodeId,
 			}];
@@ -50,7 +51,8 @@
 
 			console.log('>>>', 'current path:', pathToDebugText(currentPath));
 			for (const connection of connections) {
-				const nextTailNodeId = connection.source === prevTailNodeId ? connection.target : connection.source;
+				const currentHeadNodeIsSource = connection.source === prevTailNodeId;
+				const nextTailNodeId = currentHeadNodeIsSource ? connection.target : connection.source;
 
 				const nextNodeAlreadyTraversed = nodeExistsInVectorArray(nextTailNodeId, currentPath);
 				console.log(nextTailNodeId, 'exists in the current path:', nextNodeAlreadyTraversed);
@@ -61,7 +63,7 @@
 				console.log('continuing path with node', nextTailNodeId, '...');
 
 				const nextVector = {
-					name: connection.edgeId,
+					name: (currentHeadNodeIsSource ? '' : '-') + connection.edgeId,
 					headNodeId: prevTailNodeId,
 					tailNodeId: nextTailNodeId,
 				};
