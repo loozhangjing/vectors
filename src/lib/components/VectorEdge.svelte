@@ -3,21 +3,32 @@
 	import { POINT_NODE_HANDLE_RADIUS } from '$lib/config';
 	import { typesetMathJaxAttachment, latexTildeUnderLetterCommand } from '$lib/utils';
 
-	let { id, sourceX, sourceY, targetX, targetY }: EdgeProps = $props();
+	let { id, sourceX, sourceY: sourceYTop, targetX, targetY: targetYTop }: EdgeProps = $props();
+
+	// set y-coordinates to the centre of the handle of a PointNode instead of its top
+	let sourceY = $derived(sourceYTop + POINT_NODE_HANDLE_RADIUS);
+	let targetY = $derived(targetYTop + POINT_NODE_HANDLE_RADIUS);
 
 	let [edgePath, labelX, labelY] = $derived(
-		// make the connection start from the centre of the handle of a point node instead of from the top
 		getStraightPath({
 			sourceX,
-			sourceY: sourceY + POINT_NODE_HANDLE_RADIUS,
+			sourceY,
 			targetX,
-			targetY: targetY + POINT_NODE_HANDLE_RADIUS
+			targetY,
 		})
 	);
+
+	// offset the edge label so that it doesn't render directly above the edge line
+	let componentX = $derived(targetX - sourceX);
+	let componentY = $derived(targetY - sourceY);
+	let magnitude = $derived(Math.sqrt(componentX ** 2 + componentY ** 2));
+
+	let perpendicularX = $derived(labelX + (componentY / magnitude * 40));
+	let perpendicularY = $derived(labelY + (componentX / magnitude * -40));
 </script>
 
 <BaseEdge {id} path={edgePath} />
-<EdgeLabel x={labelX} y={labelY}>
+<EdgeLabel x={perpendicularX} y={perpendicularY}>
 	<div class='label-container'>
 		<span {@attach typesetMathJaxAttachment}>$${latexTildeUnderLetterCommand(id)}$$</span>
 	</div>
@@ -26,6 +37,9 @@
 <style>
 	:global(.svelte-flow__edge-path) {
 		stroke: black;
+	}
+	:global(.svelte-flow__edge-label) {
+		background-color: transparent;
 	}
 	.label-container > span {
 		font-size: 32px;
