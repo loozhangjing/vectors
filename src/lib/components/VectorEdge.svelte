@@ -1,6 +1,7 @@
 <script lang='ts'>
 	import { BaseEdge, EdgeLabel, getStraightPath, type EdgeProps } from '@xyflow/svelte';
-	import { POINT_NODE_HANDLE_RADIUS } from '$lib/config';
+	import arrowIcon from '$lib/assets/keyboard_arrow_down_32dp_000000_FILL0_wght400_GRAD0_opsz40.svg';
+	import { POINT_NODE_HANDLE_RADIUS, EDGE_LABEL_OFFSET_X, EDGE_LABEL_OFFSET_Y } from '$lib/config';
 	import { typesetMathJaxAttachment, latexTildeUnderLetterCommand } from '$lib/utils';
 
 	let { id, sourceX, sourceY: sourceYTop, targetX, targetY: targetYTop }: EdgeProps = $props();
@@ -23,11 +24,17 @@
 	let componentY = $derived(targetY - sourceY);
 	let magnitude = $derived(Math.sqrt(componentX ** 2 + componentY ** 2));
 
-	let perpendicularX = $derived(labelX + (componentY / magnitude * 40));
-	let perpendicularY = $derived(labelY + (componentX / magnitude * -40));
+	let absoluteAngle = $derived(Math.acos(componentY / magnitude));
+	let angle = $derived(componentX > 0 ? -absoluteAngle : absoluteAngle);
+
+	let perpendicularX = $derived(labelX + (componentY / magnitude * EDGE_LABEL_OFFSET_X));
+	let perpendicularY = $derived(labelY + (componentX / magnitude * EDGE_LABEL_OFFSET_Y));
 </script>
 
 <BaseEdge {id} path={edgePath} />
+<EdgeLabel x={labelX} y={labelY}>
+	<img src={arrowIcon} style='transform: rotate({angle}rad)'>
+</EdgeLabel>
 <EdgeLabel x={perpendicularX} y={perpendicularY}>
 	<div class='label-container'>
 		<span {@attach typesetMathJaxAttachment}>$${latexTildeUnderLetterCommand(id)}$$</span>

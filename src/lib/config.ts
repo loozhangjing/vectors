@@ -27,3 +27,6 @@ export const DEFAULT_EDGES = [
 export const DEFAULT_SELECTION_MODE = SelectionMode.Add;
 
 export const POINT_NODE_HANDLE_RADIUS = 75;
+
+export const EDGE_LABEL_OFFSET_X = 40;
+export const EDGE_LABEL_OFFSET_Y = -40;
