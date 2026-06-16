@@ -11,13 +11,13 @@
 
 <div class={{
 	 'handle-container': true,
-	 'disable-handle': GlobalState.selectionMode === SelectionMode.Edit,
+	 'disable-handle': GlobalState.selectionMode !== SelectionMode.Add,
 }}>
 	<Handle type='source' position={Position.Top} style='width: {handleLength}; height: {handleLength}' />
 </div>
 <div class={{
 	 'label-container': true,
-	 'nodrag': GlobalState.selectionMode === SelectionMode.Add,
+	 'nodrag': GlobalState.selectionMode !== SelectionMode.Move,
 }} {@attach typesetMathJaxAttachment}><span>$${id}$$</span></div>
 
 <style>
