@@ -1,5 +1,5 @@
 import { DEFAULT_SELECTION_MODE, DEFAULT_NODES, DEFAULT_EDGES } from '$lib/config';
-import DirectedGraph from '$lib/DirectedGraph.svelte';
+import DirectedGraph from '$lib/DirectedGraph';
 
 class GlobalState {
 	selectionMode = $state(DEFAULT_SELECTION_MODE);

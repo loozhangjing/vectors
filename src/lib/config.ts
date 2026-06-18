@@ -26,6 +26,11 @@ export const DEFAULT_EDGES = [
 
 export const DEFAULT_SELECTION_MODE = SelectionMode.Add;
 
+// starting point
+export const DEFAULT_SELECTED_INITIAL_NODE_ID = 'A';
+// ending point
+export const DEFAULT_SELECTED_GOAL_NODE_ID = 'B';
+
 export const POINT_NODE_HANDLE_RADIUS = 75;
 
 export const EDGE_LABEL_OFFSET_X = 50;

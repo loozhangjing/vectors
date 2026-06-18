@@ -1,115 +1,44 @@
 <script lang='ts'>
 	import { untrack } from 'svelte';
-	import { useSvelteFlow, useNodeConnections } from '@xyflow/svelte';
+
 	import {
 		typesetMathJaxAttachment, latexTildeUnderLetterCommand, latexRightArrowAboveLettersCommand
 	} from '$lib/utils';
+
 	import { type NamedVector } from '$lib/types';
+	import { DEFAULT_SELECTED_INITIAL_NODE_ID, DEFAULT_SELECTED_GOAL_NODE_ID } from '$lib/config';
+	import GlobalState from '$lib/GlobalState.svelte';
+	import findAllPathsBetweenTwoNodes from '$lib/functions/findAllPathsBetweenTwoNodes';
 
-	const { getNodes } = useSvelteFlow();
-
-	let sourceNodeId = $state('A');
-	let tailNodeId = $state('B');
+	let initialNodeId = $state(DEFAULT_SELECTED_INITIAL_NODE_ID);
+	let goalNodeId = $state(DEFAULT_SELECTED_GOAL_NODE_ID);
 	let paths: NamedVector[][] = $state([]);
 
 	$effect(() => {
-		console.log('---', 'STARTING POINT OR ENDING POINT WAS CHANGED', '---');
-		const { current: sourceNodeConnections } = useNodeConnections({ id: sourceNodeId });
+		// `$effect` tracks changes to the three variables provided as function arguments below
+		const newPaths = findAllPathsBetweenTwoNodes(
+			GlobalState.directedGraph,
+			initialNodeId,
+			goalNodeId
+		);
 
 		// all references to the `paths` variable must be inside an `untrack()`, so that changes to
-		// `paths` aren't tracked, or else this whole $effect function would run again
-		untrack(() => paths = []);
-
-		for (const connection of sourceNodeConnections) {
-			// the source and target nodes of a NodeConnection object don't necessarily correspond to
-			// the head and tail nodes of the vector in the direction we're going
-			const sourceNodeIsSource = connection.source === sourceNodeId;
-			const nextNodeId = sourceNodeIsSource ? connection.target : connection.source;
-
-			const nextPath = [{
-				name: (sourceNodeIsSource ? '' : '-') + connection.edgeId,
-				headNodeId: sourceNodeId,
-				tailNodeId: nextNodeId,
-			}];
-
-			// if the source node and tail node are connected (share an edge)
-			if (nextNodeId === tailNodeId) {
-				untrack(() => paths.push(nextPath));
-				continue;
-			}
-
-			findPathToNodeRecursively(tailNodeId, nextPath);
-		}
-
-		function findPathToNodeRecursively(targetNodeId: string, currentPath: NamedVector[]) {
-			const previousVector = currentPath.at(-1);
-
-			if (!previousVector) throw new Error("`currentPath` is empty");
-
-			const { tailNodeId: prevTailNodeId } = previousVector;
-			const { current: connections } = useNodeConnections({ id: prevTailNodeId });
-
-			console.log('>>>', 'current path:', pathToDebugText(currentPath));
-			for (const connection of connections) {
-				const currentHeadNodeIsSource = connection.source === prevTailNodeId;
-				const nextTailNodeId = currentHeadNodeIsSource ? connection.target : connection.source;
-
-				const nextNodeAlreadyTraversed = nodeExistsInVectorArray(nextTailNodeId, currentPath);
-				console.log(nextTailNodeId, 'exists in the current path:', nextNodeAlreadyTraversed);
-
-				// don't go down a path already taken before to prevent infinite recursion
-				if (nextNodeAlreadyTraversed === true) continue;
-
-				console.log('continuing path with node', nextTailNodeId, '...');
-
-				const nextVector = {
-					name: (currentHeadNodeIsSource ? '' : '-') + connection.edgeId,
-					headNodeId: prevTailNodeId,
-					tailNodeId: nextTailNodeId,
-				};
-				const nextPath = [...currentPath, nextVector];
-
-				// found a complete path to the target node
-				if (nextTailNodeId === targetNodeId) {
-					untrack(() => {
-						paths.push(nextPath);
-					});
-					continue;
-				}
-
-				findPathToNodeRecursively(targetNodeId, nextPath);
-			}
-		}
+		// `paths` aren't tracked, or else this whole callback provided to `$effect` would run again
+		untrack(() => paths = newPaths);
 	});
-
-	function nodeExistsInVectorArray(nodeId: string, path: NamedVector[]) {
-		for (const vector of path) {
-			if (vector.headNodeId === nodeId || vector.tailNodeId === nodeId) return true;
-		}
-		return false;
-	}
-
-	// for logging purposes only
-	function pathToDebugText(path: NamedVector[]) {
-		const nodes = [path[0].headNodeId];
-		for (const vector of path) {
-			nodes.push(vector.tailNodeId);
-		}
-		return nodes.join(' -> ');
-	}
 </script>
 
 <div id='source-and-tail-node-select-container'>
 	<label for="sourceNodeSelect">Starting point:</label>
-	<select id="sourceNodeSelect" bind:value={sourceNodeId}>
-		{#each getNodes() as node}
+	<select id="sourceNodeSelect" bind:value={initialNodeId}>
+		{#each GlobalState.nodes as node}
 			<option value={node.id}>{node.id}</option>
 		{/each}
 	</select>
 
 	<label for="tailNodeSelect">Ending point:</label>
-	<select id="tailNodeSelect" bind:value={tailNodeId}>
-		{#each getNodes() as node}
+	<select id="tailNodeSelect" bind:value={goalNodeId}>
+		{#each GlobalState.nodes as node}
 			<option value={node.id}>{node.id}</option>
 		{/each}
 	</select>
@@ -125,7 +54,7 @@
 			<!-- use the 'aligned' environment to align all equal signs preceded by an ampersand (&) -->
 			\begin{'{'}aligned{'}'}
 
-			{latexRightArrowAboveLettersCommand(sourceNodeId, tailNodeId)}
+			{latexRightArrowAboveLettersCommand(initialNodeId, goalNodeId)}
 
 			&= {#each path as namedVector, index}
 				{latexRightArrowAboveLettersCommand(namedVector.headNodeId, namedVector.tailNodeId)}
